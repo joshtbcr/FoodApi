@@ -18,8 +18,12 @@ namespace FoodApi
         private static HttpClient client = new HttpClient();
         private static ILogger logger;
         private static readonly string spoonacularUrl = "https://api.spoonacular.com";
-        private static readonly string foodApiKey = "526b75f54f3e4e96b467622e7413e503";
+        private static readonly string webApiUrl = "http://127.0.0.1:5000/buscar";
+        //Monga's 4d554dce52ee4426a73c6bb62720f8a7 // Josh's 526b75f54f3e4e96b467622e7413e503
+        private static readonly string foodApiKey = "4d554dce52ee4426a73c6bb62720f8a7";
         private static readonly string foodApiKeyArg = $"apiKey={foodApiKey}";
+        private static double puntosBusqueda;//N/A
+        private static double puntosDia;
 
         [FunctionName("Main")]
         public static async void Run([QueueTrigger("monjoshqueue", Connection = "AzureWebJobsStorage")]string mensaje, ILogger log)
@@ -27,11 +31,16 @@ namespace FoodApi
             logger = log;
             logger.LogInformation($"Procesando mensaje de queue: {mensaje}");
 
+            string busquedaId = mensaje.Split("$")[0];
+            string query = mensaje.Split("$")[1];
 
-            var productos = await buscarProductosSpoonacular(mensaje);
 
 
-            await enviarRespuesta(productos);
+
+            var productos = await buscarProductosSpoonacular(query);
+
+
+            await enviarRespuesta(busquedaId, productos);
         }
 
         private static async Task<List<Producto>> buscarProductosSpoonacular(string query)
@@ -55,7 +64,6 @@ namespace FoodApi
                 logger.LogInformation($"\t\t\t IdProducto:  {idProducto.Id}");
                 ids += idProducto.Id+",";
             }
-
 
 
 
@@ -92,18 +100,21 @@ namespace FoodApi
         }
 
 
-        private static async Task<bool> enviarRespuesta(List<Producto> productos)
+        private static async Task<bool> enviarRespuesta(string busquedaId, List<Producto> productos)
         {
-            logger.LogInformation($"\tEnviando productos a Web Api...");
+            logger.LogInformation($"\tEnviando productos a Web Api de la busqueda con ID {busquedaId}");
             client = prepararHttpClient(client);
 
-            //client.BaseAddress = new Uri("http://127.0.0.1:5000");
-
-            var response = client.PostAsJsonAsync("http://127.0.0.1:5000", productos);
-             
-
+            string args = "busquedaId=" + busquedaId;
+                //"&puntosBusqueda= " + puntosBusqueda +
+                //"&puntosDia= " + puntosDia;
 
 
+
+            var response = client.PostAsJsonAsync(webApiUrl + "?" + args, productos);
+            
+            //response.Result;
+            logger.LogInformation($"\t\tRespuesta de WebApi: \"{response.Result.Content.ReadAsStringAsync().Result}\"");
 
             return true;
         }
