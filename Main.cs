@@ -106,14 +106,10 @@ namespace FoodApi
             client = prepararHttpClient(client);
 
             string args = "busquedaId=" + busquedaId;
-                //"&puntosBusqueda= " + puntosBusqueda +
-                //"&puntosDia= " + puntosDia;
-
-
 
             var response = client.PostAsJsonAsync(webApiUrl + "?" + args, productos);
             
-            //response.Result;
+           
             logger.LogInformation($"\t\tRespuesta de WebApi: \"{response.Result.Content.ReadAsStringAsync().Result}\"");
 
             return true;
