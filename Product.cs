@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace FoodApi
 {
-    public class Producto
+    public class Product
     {
         //"vegetarian": true,
         //"vegan": true,
@@ -24,48 +24,48 @@ namespace FoodApi
         //"summary": "Tomato Soup might be just the soup you are searching for.",
 
         [JsonPropertyName("vegetarian")]
-        public bool Vegetariano { get; set; }
+        public bool Vegetarian { get; set; }
 
         [JsonPropertyName("vegan")]
-        public bool Vegano { get; set; }
+        public bool Vegan { get; set; }
 
         [JsonPropertyName("glutenFree")]
-        public bool LibreGluten { get; set; }
+        public bool GlutenFree { get; set; }
 
         [JsonPropertyName("dairyFree")]
-        public bool LibreLactosa { get; set; }
+        public bool DairyFree { get; set; }
 
         [JsonPropertyName("veryHealthy")]
-        public bool MuySano { get; set; }
+        public bool VeryHealthy { get; set; }
 
         [JsonPropertyName("cheap")]
-        public bool Barato{ get; set; }
+        public bool Cheap { get; set; }
 
         [JsonPropertyName("veryPopular")]
-        public bool MuyPopular { get; set; }
+        public bool VeryPopular { get; set; }
 
         [JsonPropertyName("pricePerServing")]
-        public double CostoPorcion{ get; set; }
+        public double PricePerServing { get; set; }
 
         [JsonPropertyName("servings")]
-        public int Porciones { get; set; }
+        public int Servings { get; set; }
 
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
         [JsonPropertyName("title")]
-        public string Titulo{ get; set; }
+        public string Name { get; set; }
 
         [JsonPropertyName("extendedIngredients")]
-        public List<Ingrediente> Ingredientes { get; set; }
+        public List<Ingrediente> Ingredients { get; set; }
 
         [JsonPropertyName("image")]
-        public Uri Imagen{ get; set; }
+        public Uri Image{ get; set; }
 
         [JsonPropertyName("imageType")]
-        public string TipoImagen { get; set; }
+        public string ImageType { get; set; }
 
         [JsonPropertyName("summary")]
-        public string Descripcion { get; set; }
+        public string Description { get; set; }
     }
 }

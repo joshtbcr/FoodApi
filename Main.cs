@@ -1,15 +1,9 @@
-using System;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
-using Microsoft.Azure; // Namespace for CloudConfigurationManager
-using Microsoft.Azure.Storage; // Namespace for CloudStorageAccount
-using Microsoft.Azure.Storage.Queue; // Namespace for Queue storage types
-using System.Threading.Tasks;//http client
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;//http client
 
 namespace FoodApi
 {
@@ -20,7 +14,7 @@ namespace FoodApi
         private static readonly string spoonacularUrl = "https://api.spoonacular.com";
         private static readonly string webApiUrl = "http://127.0.0.1:5000/buscar";
         //Monga's 4d554dce52ee4426a73c6bb62720f8a7 // Josh's 526b75f54f3e4e96b467622e7413e503
-        private static readonly string foodApiKey = "4d554dce52ee4426a73c6bb62720f8a7";
+        private static readonly string foodApiKey = "526b75f54f3e4e96b467622e7413e503";
         private static readonly string foodApiKeyArg = $"apiKey={foodApiKey}";
         private static double puntosBusqueda;//N/A
         private static double puntosDia;
@@ -43,7 +37,7 @@ namespace FoodApi
             await enviarRespuesta(busquedaId, productos);
         }
 
-        private static async Task<List<Producto>> buscarProductosSpoonacular(string query)
+        private static async Task<List<Product>> buscarProductosSpoonacular(string query)
         {
             client = prepararHttpClient(client);
 
@@ -79,16 +73,16 @@ namespace FoodApi
 
             logger.LogInformation($"\t\t\t URL para ids de producto:  {url}");
             streamTask = client.GetStreamAsync(url);
-            var productos = await JsonSerializer.DeserializeAsync<List<Producto>>(await streamTask);
+            var products = await JsonSerializer.DeserializeAsync<List<Product>>(await streamTask);
 
             logger.LogInformation($"\t\tProductos obtenidos:");
 
-            foreach(var producto in productos)
+            foreach(var product in products)
             {
-                logger.LogInformation($"\t\t\t{producto.Titulo}");
+                logger.LogInformation($"\t\t\t{product.Name}");
             }
 
-            return productos;
+            return products;
         }
 
         private static HttpClient prepararHttpClient(HttpClient httpClient)
@@ -100,14 +94,14 @@ namespace FoodApi
         }
 
 
-        private static async Task<bool> enviarRespuesta(string busquedaId, List<Producto> productos)
+        private static async Task<bool> enviarRespuesta(string busquedaId, List<Product> products)
         {
             logger.LogInformation($"\tEnviando productos a Web Api de la busqueda con ID {busquedaId}");
             client = prepararHttpClient(client);
 
             string args = "busquedaId=" + busquedaId;
 
-            var response = client.PostAsJsonAsync(webApiUrl + "?" + args, productos);
+            var response = client.PostAsJsonAsync(webApiUrl + "?" + args, products);
             
            
             logger.LogInformation($"\t\tRespuesta de WebApi: \"{response.Result.Content.ReadAsStringAsync().Result}\"");

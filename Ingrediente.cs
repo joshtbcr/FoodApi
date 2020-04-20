@@ -17,15 +17,15 @@ namespace FoodApi
         public double Id { get; set; }
 
         [JsonPropertyName("image")]
-        public Uri Imagen { get; set; }
+        public Uri Image { get; set; }
 
         [JsonPropertyName("name")]
-        public string Nombre { get; set; }
+        public string Name{ get; set; }
 
         [JsonPropertyName("amount")]
-        public double Cantidad { get; set; }
+        public double Amount { get; set; }
 
         [JsonPropertyName("unit")]
-        public string Unidad { get; set; }
+        public string Unit { get; set; }
     }
 }
