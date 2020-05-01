@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;//http client
+using Microsoft.Extensions.Configuration; // <- you'll need this
+using System;
 
 namespace FoodApi
 {
@@ -12,15 +14,18 @@ namespace FoodApi
         private static HttpClient client = new HttpClient();
         private static ILogger logger;
         private static readonly string spoonacularUrl = "https://api.spoonacular.com";
-        private static readonly string webApiUrl = "http://127.0.0.1:5000/buscar";
+        private static readonly string WebApi = "https://monjoshflask.azurewebsites.net";
+        private static readonly string webApiUrl = WebApi + "/buscar";
         //Monga's 4d554dce52ee4426a73c6bb62720f8a7 // Josh's 526b75f54f3e4e96b467622e7413e503
-        private static readonly string foodApiKey = "526b75f54f3e4e96b467622e7413e503";
+        private static readonly string foodApiKey = "4d554dce52ee4426a73c6bb62720f8a7";
         private static readonly string foodApiKeyArg = $"apiKey={foodApiKey}";
         private static double puntosBusqueda;//N/A
         private static double puntosDia;
 
+        private static ConfigurationBuilder config;
+
         [FunctionName("Main")]
-        public static async void Run([QueueTrigger("monjoshqueue", Connection = "AzureWebJobsStorage")]string mensaje, ILogger log)
+        public static async void Run([QueueTrigger("monjoshqueue", Connection = "AzureWebJobsStorage")]string mensaje, ILogger log, ExecutionContext context)
         {
             logger = log;
             logger.LogInformation($"Procesando mensaje de queue: {mensaje}");
@@ -28,7 +33,15 @@ namespace FoodApi
             string busquedaId = mensaje.Split("$")[0];
             string query = mensaje.Split("$")[1];
 
+            var config = new ConfigurationBuilder()
+            .SetBasePath(context.FunctionAppDirectory)
+            .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true) // <- This gives you access to your application settings in your local development environment
+            .AddEnvironmentVariables() // <- This is what actually gets you the application settings in Azure
+            .Build();
 
+            var stringsito = config["FOODAPI_URL"];
+
+            logger.LogInformation($"Environment : {stringsito}");
 
 
             var productos = await buscarProductosSpoonacular(query);
